@@ -341,7 +341,7 @@ export const getAdminViewRoutes = (): RouteInterface[] => {
                                 showOnSidePanel: false
                             }
                         ],
-                        component: lazy(() => import("../../claims/pages/claim-dialects")),
+                        component: lazy(() => import("../../claims/pages/local-claims")),
                         exact: true,
                         icon: {
                             icon: getSidePanelIcons().claims
@@ -349,7 +349,7 @@ export const getAdminViewRoutes = (): RouteInterface[] => {
                         id: "attributeDialects",
                         name: "console:manage.features.sidePanel.attributeDialects",
                         order: 6,
-                        path: AppConstants.getPaths().get("CLAIM_DIALECTS"),
+                        path: AppConstants.getPaths().get("LOCAL_CLAIMS"),
                         protected: true,
                         showOnSidePanel: true
                     },

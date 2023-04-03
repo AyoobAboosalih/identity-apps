@@ -847,85 +847,8 @@ export const AttributeSelectionOIDC: FunctionComponent<AttributeSelectionOIDCPro
                                                 />
                                             )
                                     }
-                                </Grid.Row>
-                                <Grid.Row>
-                                    <SegmentedAccordion
-                                        fluid
-                                        data-testid={ `${ testId }-oidc-scopes` }
-                                        data-componentid={  `${ componentId }-oidc-scopes` }
-                                        viewType="table-view"
-                                    >
-                                        {
-                                            externalClaimsGroupedByScopes.map(
-                                                (scope: OIDCScopesClaimsListInterface) => {
-                                                    if (scope.name === ""){
-                                                        return (
-                                                            <Fragment key={ scope.name }>
-                                                                <SegmentedAccordion.Title
-                                                                    id={ scope.name }
-                                                                    data-testid={ `${testId}-${scope.name}-title` }
-                                                                    data-componentid={ `${componentId}-${scope.name}
-                                                                    -title` }
-                                                                    active={ expandedScopes?.includes(scope.name)
-                                                                            || false }
-                                                                    accordionIndex={ scope.name }
-                                                                    onClick={ () => handleAccordionTitleClick(scope) }
-                                                                    content={ (
-                                                                        resolveScopeListItem(scope)
-                                                                    ) }
-                                                                    hideChevron={ false }
-                                                                    actions={ createAccordionTitleAction(scope) }
-                                                                />
-    
-                                                                <SegmentedAccordion.Content
-                                                                    active={ expandedScopes?.includes(scope.name)
-                                                                            || false }
-                                                                    data-testid={ `${testId}-${scope.name}-content` }
-                                                                    data-componentid={ `${componentId}-${scope.name}
-                                                                    -content` }
-                                                                    children={ resolveUserAttributeList(scope.claims) }
-                                                                />
-                                                            </Fragment>
-                                                        );
-                                                    }
-                                                })
-                                        }
-                                    </SegmentedAccordion>
-                                </Grid.Row>
+                                </Grid.Row> 
                             </>
-                            <Hint>
-                                <Trans
-                                    i18nKey={
-                                        "console:develop.features.applications.edit.sections." +
-                                        "attributes.selection.attributeComponentHint"
-                                    }
-                                >
-                                    Use
-                                    <Link
-                                        external={ false }
-                                        onClick={ () => {
-                                            history.push(
-                                                AppConstants.getPaths().get("OIDC_SCOPES")
-                                            );
-                                        } }
-                                    > OpenID Connect Scopes
-                                    </Link>
-                                            to manage user attribute to a scope. You can add new 
-                                            attributes by navigating to 
-                                    <Link
-                                        external={ false }
-                                        onClick={ () => {
-                                            history.push(
-                                                AppConstants.getPaths()
-                                                    .get("ATTRIBUTE_MAPPINGS")
-                                                    .replace(":type", ClaimManagementConstants.OIDC)
-                                            );
-                                        } }
-                                    > 
-                                        Attributes.
-                                    </Link>
-                                </Trans>
-                            </Hint>
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row className="mt-5">

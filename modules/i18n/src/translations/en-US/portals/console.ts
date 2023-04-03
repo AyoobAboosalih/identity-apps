@@ -6727,9 +6727,9 @@ export const console: ConsoleNS = {
                         attributeHint: "A unique ID for the attribute."
                             + " The ID will be appended to the attribute mapping to create a attribute",
                         attributeID: {
-                            label: "Attribute Name",
+                            label: "Name",
                             placeholder: "Enter an attribute name",
-                            requiredErrorMessage: "Attribute name is required"
+                            requiredErrorMessage: "Name is required"
                         },
                         description: {
                             label: "Description",
@@ -6750,9 +6750,9 @@ export const console: ConsoleNS = {
                                 "external claim mapping found for this claim attribute."
                         },
                         name: {
-                            label: "Attribute Display Name",
-                            placeholder: "Enter a name for the attribute",
-                            requiredErrorMessage: "Name is required",
+                            label: "Display Name",
+                            placeholder: "Enter a display name for the attribute",
+                            requiredErrorMessage: "Display Name is required",
                             validationErrorMessages: {
                                 invalidName: "The name you entered contains disallowed characters. It can only" +
                                     " contain up to 30 characters, including alphanumerics, periods (.), dashes (-)," +
@@ -6863,7 +6863,7 @@ export const console: ConsoleNS = {
                             action: "New Attribute",
                             back: "Go back to Attributes and Mappings",
                             description: "Create and manage attributes",
-                            title: "Attributes"
+                            title: "User Attributes"
                         }
                     },
                     wizard: {
@@ -9231,7 +9231,7 @@ export const console: ConsoleNS = {
                 addEmailTemplate: "Add Email Template",
                 addEmailTemplateLocale: "Add Email Template Locale",
                 approvals: "Approvals",
-                attributeDialects: "Attributes",
+                attributeDialects: "User Attributes",
                 categories: {
                     attributes: "User Attributes",
                     certificates: "Certificates",

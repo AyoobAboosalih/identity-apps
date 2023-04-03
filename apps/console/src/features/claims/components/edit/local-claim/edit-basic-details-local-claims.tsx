@@ -432,21 +432,6 @@ export const EditBasicDetailsLocalClaims: FunctionComponent<EditBasicDetailsLoca
         <>
             { confirmDelete && deleteConfirmation() }
             <EmphasizedSegment padded="very">
-                <Grid>
-                    <Grid.Row columns={ 1 }>
-                        <Grid.Column tablet={ 16 } computer={ 12 } largeScreen={ 9 } widescreen={ 6 } mobile={ 16 }>
-                            <SemanticForm>
-                                <SemanticForm.Field
-                                    data-testid={ `${ testId }-form-attribute-uri-readonly-input` }
-                                >
-                                    <label>{ t("console:manage.features.claims.local.attributes.attributeURI") }</label>
-                                    <CopyInputField value={ claim ? claim.claimURI : "" } />
-                                    <Hint>Unique identifier of the attribute.</Hint>
-                                </SemanticForm.Field>
-                            </SemanticForm>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
                 <Form
                     id={ FORM_ID }
                     uncontrolledForm={ false }
@@ -497,6 +482,26 @@ export const EditBasicDetailsLocalClaims: FunctionComponent<EditBasicDetailsLoca
                         hint={ t("console:manage.features.claims.local.forms.descriptionHint") }
                         readOnly={ isReadOnly }
                     />
+                    <Grid>
+                        <Grid.Row columns={ 1 }>
+                            <Grid.Column 
+                                tablet={ 16 } 
+                                computer={ 12 }
+                                largeScreen={ 14 } 
+                                widescreen={ 6 } 
+                                mobile={ 16 }>
+                                <SemanticForm>
+                                    <SemanticForm.Field
+                                        data-testid={ `${ testId }-form-attribute-uri-readonly-input` }
+                                    >
+                                        <label>{ t("console:manage.features.claims.local.attributes.attributeURI") }</label>
+                                        <CopyInputField value={ claim ? claim.claimURI : "" } />
+                                        <Hint>Unique identifier of the attribute.</Hint>
+                                    </SemanticForm.Field>
+                                </SemanticForm>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
 
                     { attributeConfig.localAttributes.createWizard.showRegularExpression && !hideSpecialClaims
                         && (

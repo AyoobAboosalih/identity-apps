@@ -292,22 +292,6 @@ const LocalClaimsPage: FunctionComponent<LocalClaimsPageInterface> = (
                     ) : null
             }
             <PageLayout
-                action={
-                    (isLoading || !(!searchQuery && filteredClaims?.length <= 0))
-                    && hasRequiredScopes(featureConfig?.attributeDialects,
-                        featureConfig?.attributeDialects?.scopes?.create, allowedScopes)
-                    && attributeConfig.attributes.addAttribute && (
-                        <PrimaryButton
-                            onClick={ () => {
-                                setOpenModal(true);
-                            } }
-                            data-testid={ `${ testId }-list-layout-add-button` }
-                        >
-                            <Icon name="add" />
-                            { t("console:manage.features.claims.local.pageLayout.local.action") }
-                        </PrimaryButton>
-                    )
-                }
                 isLoading={ isLoading }
                 title={ t("console:manage.features.claims.local.pageLayout.local.title") }
                 pageTitle={ t("console:manage.features.claims.local.pageLayout.local.title") }
@@ -321,10 +305,6 @@ const LocalClaimsPage: FunctionComponent<LocalClaimsPageInterface> = (
                         </DocumentationLink>
                     </>
                 ) }
-                backButton={ {
-                    onClick: () => { history.push(AppConstants.getPaths().get("CLAIM_DIALECTS")); },
-                    text: t("console:manage.features.claims.local.pageLayout.local.back")
-                } }
                 data-testid={ `${ testId }-page-layout` }
             >
                 <ListLayout
@@ -370,13 +350,22 @@ const LocalClaimsPage: FunctionComponent<LocalClaimsPageInterface> = (
                     onSortStrategyChange={ handleSortStrategyChange }
                     leftActionPanel={ null }
                     showPagination={ true }
-                    sortOptions={ SORT_BY }
-                    sortStrategy={ sortBy }
                     showTopActionPanel={ isLoading || !(!searchQuery && filteredClaims?.length <= 0) }
                     totalPages={ Math.ceil(filteredClaims?.length / listItemLimit) }
                     totalListSize={ filteredClaims?.length }
                     onSortOrderChange={ handleSortOrderChange }
                     data-testid={ `${ testId }-list-layout` }
+                    rightActionPanel={ (
+                        <PrimaryButton
+                            onClick={ () => {
+                                setOpenModal(true);
+                            } }
+                            data-testid={ `${ testId }-list-layout-add-button` }
+                        >
+                            <Icon name="add" />
+                            { t("console:manage.features.claims.local.pageLayout.local.action") }
+                        </PrimaryButton>
+                     ) }
                 >
                     <ClaimsList
                         advancedSearch={ (

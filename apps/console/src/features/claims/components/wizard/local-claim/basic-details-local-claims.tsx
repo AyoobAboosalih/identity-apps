@@ -17,13 +17,13 @@
  */
 
 import { TestableComponentInterface } from "@wso2is/core/models";
-import { Field, FormValue, Forms, Validation } from "@wso2is/forms";
-import { GenericIcon, Hint, InlineEditInput, Message, Popup } from "@wso2is/react-components";
+import { Field, FormValue, Forms, Validation} from "@wso2is/forms";
+import { Hint, Popup } from "@wso2is/react-components";
 import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Card, Grid, Icon, Label } from "semantic-ui-react";
+import { Grid, Label } from "semantic-ui-react";
 import { attributeConfig } from "../../../../../extensions";
-import { getTechnologyLogos } from "../../../../core";
+import { getOIDCScopesList } from "../../../../oidc-scopes/api/oidc-scopes";
 
 /**
  * Prop types of `BasicDetailsLocalClaims` component
@@ -78,6 +78,7 @@ export const BasicDetailsLocalClaims = (props: BasicDetailsLocalClaimsPropsInter
     const [ isShow, setIsShow ] = useState(false);
     const [ isShowNameHint, setIsShowNameHint ] = useState(false);
     const [ isShowClaimIDHint, setIsShowClaimIDHint ] = useState(false);
+    const [ isShowScopeHint, setIsShowScopeHint ] = useState(false);
     const [ isShowRegExHint, setIsShowRegExHint ] = useState(false);
     const [ isShowDisplayOrderHint, setIsShowDisplayOrderHint ] = useState(false);
     const [ showOIDCMappingError, setShowOIDCMappingError ] = useState<boolean>(false);
@@ -94,19 +95,30 @@ export const BasicDetailsLocalClaims = (props: BasicDetailsLocalClaimsPropsInter
     const claimField = useRef<HTMLElement>(null);
     const regExField = useRef<HTMLElement>(null);
     const displayOrderField = useRef<HTMLElement>(null);
+    const scopeField = useRef<HTMLElement>(null);
 
     const nameTimer = useRef(null);
     const claimTimer = useRef(null);
     const regExTimer = useRef(null);
     const displayTimer = useRef(null);
+    const scopeTimer = useRef(null);
 
     const { t } = useTranslation();
+
+    const [ scopesList, setScopesList ] = useState<any>(undefined);
+
+    const getOIDCScopesListCall = () => {
+        getOIDCScopesList().then(response => {
+            setScopesList(response);   
+        });
+    };
 
     /**
      * Set the if show on profile is selected or not
      * and the claim ID from the received `values` prop
      */
     useEffect(() => {
+        getOIDCScopesListCall();
         setIsShow(values?.get("supportedByDefault")?.length > 0);
         setClaimID(values?.get("claimURI")?.toString());
     }, [ values ]);
@@ -198,7 +210,7 @@ export const BasicDetailsLocalClaims = (props: BasicDetailsLocalClaimsPropsInter
                     // TODO: Move custom wizard to extensions
                         <>
                             <Grid.Row columns={ 1 } >
-                                <Grid.Column width={ 8 } >
+                                <Grid.Column width={ 12 } >
                                     <Field
                                         type="text"
                                         name="claimURI"
@@ -285,182 +297,20 @@ export const BasicDetailsLocalClaims = (props: BasicDetailsLocalClaimsPropsInter
                                         position="bottom left"
                                         context={ claimField }
                                     />
-                                    <Label className="mb-3 ml-0">
-                                        <em>Attribute URI</em>:&nbsp;
-                                        { `${claimURIBase}/${ claimID ? claimID : "" }` }
-                                    </Label>
-                                </Grid.Column>
-                                <Grid.Column width={ 16 }>
-                                    <Card fluid >
-                                        <Card.Content>
-                                            <Card.Header className="mb-2">
-                                                { t("extensions:manage.attributes.generatedAttributeMapping.title") }
-                                            </Card.Header>
-                                            <Card.Meta className="mb-5">
-                                                { t("extensions:manage.attributes.generatedAttributeMapping." +
-                                                    "description") }
-                                            </Card.Meta>
-                                            <Card.Description className="mt-1 mb-1">
-                                                {
-                                                    // TODO : Need to move ti i18n files
-                                                    showSCIMMappingError && (
-                                                        <Message
-                                                            className="mb-4"
-                                                            size="tiny"
-                                                            type="error"
-                                                            content="The SCIM mapping value entered contains illegal
-                                                                characters. Only alphabets, numbers, `_` are allowed."
-                                                        />
-                                                    )
-                                                }
-                                                {
-                                                    // TODO : Need to move ti i18n files
-                                                    showOIDCMappingError && (
-                                                        <Message
-                                                            className="mb-4"
-                                                            size="tiny"
-                                                            type="error"
-                                                            content="The OpenID Connect mapping value entered contains
-                                                                illegal characters. Only alphabets, numbers, `#`, and
-                                                                `_` are allowed."
-                                                        />
-                                                    )
-                                                }
-                                                <Grid verticalAlign="middle">
-                                                    <Grid.Row columns={ 2 } >
-                                                        <Grid.Column width={ 5 }>
-                                                            <GenericIcon
-                                                                transparent
-                                                                verticalAlign="middle"
-                                                                rounded
-                                                                icon={ getTechnologyLogos().oidc }
-                                                                spaced="right"
-                                                                size="micro"
-                                                                floated="left"
-                                                            />
-                                                            <span>
-                                                                { t("extensions:manage.attributes."
-                                                                    +"generatedAttributeMapping.OIDCProtocol") }
-                                                            </span>
-                                                        </Grid.Column>
-                                                        <Grid.Column width={ 11 }>
-                                                            <InlineEditInput
-                                                                maxLength={ 30 }
-                                                                text={ oidcMapping }
-                                                                validation="^[A-za-z0-9#_]+$"
-                                                                errorHandler={ (status) => {
-                                                                    setShowOIDCMappingError(status);
-                                                                } }
-                                                                onEdit={ (isEdit) => {
-                                                                    setIsInlineEditMode(isEdit);
-                                                                } }
-                                                                onChangesSaved={ async (value: string) => {
-                                                                    if (value) {
-                                                                        setOidcMapping(value);
-                                                                        await attributeConfig
-                                                                            .localAttributes
-                                                                            .checkAttributeNameAvailability(
-                                                                                value, "OIDC"
-                                                                            )
-                                                                            .then(response => {
-                                                                                setNoUniqueOIDCAttrib(
-                                                                                    response.get("OIDC")
-                                                                                );
-                                                                            });
-                                                                        setShowOIDCMappingError(false);
-                                                                    }
-                                                                } }
-                                                            />
-                                                        </Grid.Column>
-                                                    </Grid.Row>
-                                                    {
-                                                        !isScimMappingRemoved && (
-                                                            <Grid.Row columns={ 3 }>
-                                                                <Grid.Column width={ 3 }>
-                                                                    <GenericIcon
-                                                                        transparent
-                                                                        verticalAlign="middle"
-                                                                        rounded
-                                                                        icon={ getTechnologyLogos().scim }
-                                                                        spaced="right"
-                                                                        size="micro"
-                                                                        floated="left"
-                                                                    />
-                                                                    <span>
-                                                                        { t("extensions:manage.attributes."
-                                                                            +"generatedAttributeMapping.SCIMProtocol") }
-                                                                    </span>
-                                                                </Grid.Column>
-                                                                <Grid.Column width={ 11 }>
-                                                                    <InlineEditInput
-                                                                        maxLength={ 30 }
-                                                                        textPrefix="urn:scim:wso2:schema:"
-                                                                        validation="^[a-zA-Z0-9_-]*$"
-                                                                        errorHandler={ (status) => {
-                                                                            setShowScimMappingError(status);
-                                                                        } }
-                                                                        onEdit={ (isEdit) => {
-                                                                            setIsInlineEditMode(isEdit);
-                                                                        } }
-                                                                        onChangesSaved={ async (value: string) => {
-                                                                            if (value) {
-                                                                                setScimMapping(value);
-                                                                                await attributeConfig
-                                                                                    .localAttributes
-                                                                                    .checkAttributeNameAvailability(
-                                                                                        value, "SCIM"
-                                                                                    )
-                                                                                    .then(response => {
-                                                                                        setNoUniqueSCIMAttrib(
-                                                                                            response.get("SCIM")
-                                                                                        );
-                                                                                    });
-                                                                                setShowScimMappingError(false);
-                                                                            }
-
-                                                                        } }
-                                                                        text={ scimMapping }
-                                                                    />
-                                                                </Grid.Column>
-                                                                <Grid.Column width={ 2 }>
-                                                                    { scimMapping
-                                                                        ? (
-                                                                            <Popup
-                                                                                trigger={ (
-                                                                                    <Icon
-                                                                                        name="trash alternate"
-                                                                                        link
-                                                                                        onClick={ () => {
-                                                                                            setScimMapping("");
-                                                                                            setIsScimMappingRemoved(
-                                                                                                true
-                                                                                            );
-                                                                                        } }
-                                                                                    />
-                                                                                ) }
-                                                                                content={ "Remove Mapping" }
-                                                                                position="top center"
-                                                                                size="mini"
-                                                                                hideOnScroll
-                                                                                inverted
-                                                                            />
-                                                                        ): null
-                                                                    }
-                                                                </Grid.Column>
-                                                            </Grid.Row>
-                                                        )
-                                                    }
-                                                </Grid>
-                                            </Card.Description>
-                                        </Card.Content>
-                                    </Card>
+                                    {
+                                        attributeConfig.localAttributes.createWizard.customWIzard && (
+                                            <Hint>
+                                                { t("The name used by the system") }
+                                            </Hint>
+                                        )
+                                    }
                                 </Grid.Column>
                             </Grid.Row>
                         </>
                     )
                 }
                 <Grid.Row columns={ attributeConfig.localAttributes.createWizard.customWIzard ? 1 : 2 }>
-                    <Grid.Column width={ 8 }>
+                    <Grid.Column width={ 12 }>
                         <Field
                             onMouseOver={ () => {
                                 delayPopup(setIsShowNameHint, nameTimer);
@@ -501,7 +351,7 @@ export const BasicDetailsLocalClaims = (props: BasicDetailsLocalClaimsPropsInter
                     </Grid.Column>
                     {
                         !attributeConfig.localAttributes.createWizard.customWIzard && (
-                            <Grid.Column width={ 8 }>
+                            <Grid.Column width={ 12 }>
                                 <Field
                                     type="text"
                                     name="claimURI"
@@ -548,6 +398,47 @@ export const BasicDetailsLocalClaims = (props: BasicDetailsLocalClaimsPropsInter
                             </Grid.Column>
                         )
                     }
+                </Grid.Row>
+                <Grid.Row columns={ 1 }>
+                    <Grid.Column width={ 12 }>
+                        <Field
+                            onMouseOver={ () => {
+                                delayPopup(setIsShowScopeHint, scopeTimer);
+                            } }
+                            onMouseOut={ () => {
+                                closePopup(setIsShowScopeHint, scopeTimer);
+                            } }
+                            type="dropdown"
+                            children= { scopesList }
+                            name="scope"
+                            label={ t("Scope") }
+                            required={ true }
+                            requiredErrorMessage={ t("Scope is required") }
+                            placeholder={ t("Select a Scope") }
+                            value={ scopesList?.value }
+                            ref={ scopeField }
+                            data-testid={ `${ testId }-form-name-input` }
+                        />
+                        <Popup
+                            content={ t("The OIDC scope of the attribute") }
+                            inverted
+                            open={ isShowScopeHint }
+                            trigger={ <span></span> }
+                            onClose={ () => {
+                                closePopup(setIsShowScopeHint, scopeTimer);
+                            } }
+                            position="bottom left"
+                            context={ scopeField }
+                        />
+                        {
+                            attributeConfig.localAttributes.createWizard.customWIzard && (
+                                <Hint>
+                                    { t("You will be able to select the attribute from the above " +
+                                     "selected scope to be retrieved in your applications.") }
+                                </Hint>
+                            )
+                        }
+                    </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={ 2 }>
                     {
